@@ -2,22 +2,54 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 import { sendDownloadEmail } from "@/lib/email";
 import { v4 as uuidv4 } from "uuid";
+import crypto from "crypto";
 
-const XENDIT_WEBHOOK_TOKEN = process.env.XENDIT_WEBHOOK_TOKEN!;
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL!;
 
 export async function POST(req: NextRequest) {
   try {
-    // Validate webhook token
-    const token = req.headers.get("x-callback-token");
-    if (token !== XENDIT_WEBHOOK_TOKEN) {
+    const payload = await req.json();
+
+    const {
+      order_id,
+      status_code,
+      gross_amount,
+      signature_key,
+      transaction_status,
+      fraud_status,
+      payment_type,
+    } = payload;
+
+    // Validate Midtrans signature
+    const serverKey = process.env.MIDTRANS_SERVER_KEY!;
+    const expectedSignature = crypto
+      .createHash("sha512")
+      .update(`${order_id}${status_code}${gross_amount}${serverKey}`)
+      .digest("hex");
+
+    if (signature_key !== expectedSignature) {
+      console.error("Invalid Midtrans signature");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const payload = await req.json();
-    const { external_id, status, payer_email } = payload;
+    // Determine if payment is successful
+    const isSuccess =
+      transaction_status === "capture"
+        ? fraud_status === "accept"
+        : transaction_status === "settlement";
 
-    if (status !== "PAID") {
+    if (!isSuccess) {
+      // Handle failed/cancelled/expired
+      if (
+        transaction_status === "cancel" ||
+        transaction_status === "deny" ||
+        transaction_status === "expire"
+      ) {
+        await supabaseAdmin
+          .from("orders")
+          .update({ status: transaction_status })
+          .eq("id", order_id);
+      }
       return NextResponse.json({ received: true });
     }
 
@@ -25,11 +57,11 @@ export async function POST(req: NextRequest) {
     const { data: order, error } = await supabaseAdmin
       .from("orders")
       .select("*")
-      .eq("id", external_id)
+      .eq("id", order_id)
       .single();
 
     if (error || !order) {
-      console.error("Order not found:", external_id);
+      console.error("Order not found:", order_id);
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
@@ -41,8 +73,12 @@ export async function POST(req: NextRequest) {
     // Update order status
     await supabaseAdmin
       .from("orders")
-      .update({ status: "paid", paid_at: new Date().toISOString() })
-      .eq("id", external_id);
+      .update({
+        status: "paid",
+        paid_at: new Date().toISOString(),
+        payment_type: payment_type || null,
+      })
+      .eq("id", order_id);
 
     // For product orders: generate download links
     if (order.type === "product") {
@@ -55,7 +91,7 @@ export async function POST(req: NextRequest) {
 
         await supabaseAdmin.from("download_links").insert({
           token: dlToken,
-          order_id: external_id,
+          order_id: order_id,
           product_title: item.title,
           product_id: item.id,
           expires_at: expiresAt.toISOString(),
@@ -71,18 +107,17 @@ export async function POST(req: NextRequest) {
 
       // Send email with download links
       await sendDownloadEmail({
-        to: payer_email || order.buyer_email,
+        to: order.buyer_email,
         buyerName: order.buyer_name,
         items: order.items,
         downloadLinks,
-        orderId: external_id,
+        orderId: order_id,
       });
     }
 
-    // For service orders: notify admin via email
+    // For service orders: just log
     if (order.type === "service") {
-      // Just update status — admin will follow up via WA
-      console.log(`Service order paid: ${external_id} by ${order.buyer_name}`);
+      console.log(`Service order paid: ${order_id} by ${order.buyer_name}`);
     }
 
     return NextResponse.json({ received: true });

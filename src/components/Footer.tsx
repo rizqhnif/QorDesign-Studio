@@ -127,7 +127,7 @@ export default function Footer() {
                 className="flex items-center gap-2 text-white/50 hover:text-yellow-400 transition-colors text-sm"
               >
                 <InstagramIcon size={14} />
-                @qornyjusuf
+                @qordesignstudio
               </a>
             </div>
           </div>

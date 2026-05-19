@@ -11,11 +11,12 @@ type Props = {
 };
 
 function formatPrice(price: number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(price);
+  return (
+    "IDR " +
+    new Intl.NumberFormat("id-ID", {
+      maximumFractionDigits: 0,
+    }).format(price)
+  );
 }
 
 export default function CheckoutModal({ open, onClose }: Props) {
@@ -49,7 +50,7 @@ export default function CheckoutModal({ open, onClose }: Props) {
         return;
       }
 
-      // Redirect to Xendit invoice page
+      // Redirect to Midtrans payment page
       clearCart();
       window.location.href = data.invoiceUrl;
     } catch {
@@ -182,7 +183,7 @@ export default function CheckoutModal({ open, onClose }: Props) {
                 </button>
 
                 <p className="text-white/20 text-xs text-center">
-                  Secured by Xendit · Bank Transfer, E-Wallet, QRIS, Credit Card
+                  Secured by Midtrans · Bank Transfer, E-Wallet, QRIS, Credit Card
                 </p>
               </form>
             </div>

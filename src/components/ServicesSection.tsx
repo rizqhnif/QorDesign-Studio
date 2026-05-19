@@ -73,11 +73,12 @@ const services = [
 type Service = (typeof services)[0];
 
 function formatPrice(price: number) {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(price);
+  return (
+    "IDR " +
+    new Intl.NumberFormat("id-ID", {
+      maximumFractionDigits: 0,
+    }).format(price)
+  );
 }
 
 function buildWAMessage(service: string, price: number) {
