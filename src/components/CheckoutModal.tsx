@@ -50,7 +50,7 @@ export default function CheckoutModal({ open, onClose }: Props) {
         return;
       }
 
-      // Redirect to Midtrans payment page
+      // Redirect to DOKU payment page
       clearCart();
       window.location.href = data.invoiceUrl;
     } catch {
@@ -183,7 +183,7 @@ export default function CheckoutModal({ open, onClose }: Props) {
                 </button>
 
                 <p className="text-white/20 text-xs text-center">
-                  Secured by Midtrans · Bank Transfer, E-Wallet, QRIS, Credit Card
+                  Secured by DOKU · Bank Transfer, E-Wallet, QRIS, Credit Card
                 </p>
               </form>
             </div>

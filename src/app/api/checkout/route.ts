@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
-import { snap } from "@/lib/midtrans";
+import {
+  generateSignature,
+  DOKU_BASE_URL,
+  CHECKOUT_PATH,
+  DOKU_CLIENT_ID,
+} from "@/lib/doku";
 import { v4 as uuidv4 } from "uuid";
 
 export async function POST(req: NextRequest) {
@@ -21,32 +26,76 @@ export async function POST(req: NextRequest) {
       0,
     );
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    const requestId = uuidv4();
+    const timestamp = new Date().toISOString().replace(/\.\d{3}Z$/, "Z");
 
-    // Create Midtrans Snap transaction
-    const parameter = {
-      transaction_details: {
-        order_id: orderId,
-        gross_amount: total,
+    const requestBody = {
+      order: {
+        amount: total,
+        invoice_number: orderId,
+        currency: "IDR",
+        callback_url: `${baseUrl}/order/success?order_id=${orderId}`,
+        callback_url_cancel: `${baseUrl}/order/failed?order_id=${orderId}`,
+        callback_url_result: `${baseUrl}/order/success?order_id=${orderId}`,
+        language: "ID",
+        auto_redirect: true,
+        line_items: items.map(
+          (item: { id?: string; title: string; price: number }) => ({
+            id: item.id || uuidv4().slice(0, 8),
+            name: item.title,
+            quantity: 1,
+            price: item.price,
+          }),
+        ),
       },
-      customer_details: {
-        first_name: buyerName,
+      payment: {
+        payment_due_date: 60,
+      },
+      customer: {
+        name: buyerName,
         email: buyerEmail,
-        phone: buyerPhone || "",
-      },
-      item_details: items.map((item: { title: string; price: number }) => ({
-        id: uuidv4().slice(0, 8),
-        price: item.price,
-        quantity: 1,
-        name: item.title,
-      })),
-      callbacks: {
-        finish: `${baseUrl}/order/success?order_id=${orderId}`,
-        error: `${baseUrl}/order/failed?order_id=${orderId}`,
-        pending: `${baseUrl}/order/success?order_id=${orderId}`,
+        phone: buyerPhone ? `62${buyerPhone.replace(/^0/, "")}` : undefined,
       },
     };
 
-    const transaction = await snap.createTransaction(parameter);
+    const signature = generateSignature({
+      requestId,
+      timestamp,
+      path: CHECKOUT_PATH,
+      body: requestBody,
+    });
+
+    const dokuRes = await fetch(`${DOKU_BASE_URL}${CHECKOUT_PATH}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Client-Id": DOKU_CLIENT_ID,
+        "Request-Id": requestId,
+        "Request-Timestamp": timestamp,
+        Signature: signature,
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (!dokuRes.ok) {
+      const err = await dokuRes.json();
+      console.error("DOKU error:", err);
+      return NextResponse.json(
+        { error: "Failed to create payment" },
+        { status: 500 },
+      );
+    }
+
+    const dokuData = await dokuRes.json();
+    const paymentUrl = dokuData?.response?.payment?.url;
+
+    if (!paymentUrl) {
+      console.error("DOKU no payment URL:", dokuData);
+      return NextResponse.json(
+        { error: "Failed to get payment URL" },
+        { status: 500 },
+      );
+    }
 
     // Save order to Supabase
     const { error: dbError } = await supabaseAdmin.from("orders").insert({
@@ -58,8 +107,8 @@ export async function POST(req: NextRequest) {
       total,
       type: type || "product",
       status: "pending",
-      midtrans_snap_token: transaction.token,
-      midtrans_redirect_url: transaction.redirect_url,
+      doku_session_id: dokuData?.response?.order?.session_id || null,
+      doku_payment_url: paymentUrl,
       created_at: new Date().toISOString(),
     });
 
@@ -69,8 +118,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       orderId,
-      snapToken: transaction.token,
-      invoiceUrl: transaction.redirect_url,
+      invoiceUrl: paymentUrl,
     });
   } catch (err) {
     console.error("Checkout error:", err);

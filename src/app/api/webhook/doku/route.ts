@@ -1,72 +1,62 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
 import { sendDownloadEmail } from "@/lib/email";
+import { verifyWebhookSignature } from "@/lib/doku";
 import { v4 as uuidv4 } from "uuid";
-import crypto from "crypto";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL!;
+const WEBHOOK_PATH = "/api/webhook/doku";
 
 export async function POST(req: NextRequest) {
   try {
+    const clientId = req.headers.get("Client-Id") || "";
+    const requestId = req.headers.get("Request-Id") || "";
+    const timestamp = req.headers.get("Request-Timestamp") || "";
+    const incomingSignature = req.headers.get("Signature") || "";
+
     const payload = await req.json();
 
-    const {
-      order_id,
-      status_code,
-      gross_amount,
-      signature_key,
-      transaction_status,
-      fraud_status,
-      payment_type,
-    } = payload;
+    // Verify DOKU webhook signature
+    const isValid = verifyWebhookSignature({
+      clientId,
+      requestId,
+      timestamp,
+      path: WEBHOOK_PATH,
+      body: payload,
+      incomingSignature,
+    });
 
-    // Validate Midtrans signature
-    const serverKey = process.env.MIDTRANS_SERVER_KEY!;
-    const expectedSignature = crypto
-      .createHash("sha512")
-      .update(`${order_id}${status_code}${gross_amount}${serverKey}`)
-      .digest("hex");
-
-    if (signature_key !== expectedSignature) {
-      console.error("Invalid Midtrans signature");
+    if (!isValid) {
+      console.error("Invalid DOKU webhook signature");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Determine if payment is successful
-    const isSuccess =
-      transaction_status === "capture"
-        ? fraud_status === "accept"
-        : transaction_status === "settlement";
+    const transactionStatus = payload?.transaction?.status;
+    const invoiceNumber = payload?.order?.invoice_number;
 
-    if (!isSuccess) {
-      // Handle failed/cancelled/expired
-      if (
-        transaction_status === "cancel" ||
-        transaction_status === "deny" ||
-        transaction_status === "expire"
-      ) {
-        await supabaseAdmin
-          .from("orders")
-          .update({ status: transaction_status })
-          .eq("id", order_id);
-      }
+    // For CHECKOUT integration, ignore FAILED status (customer can retry)
+    if (!transactionStatus || transactionStatus !== "SUCCESS") {
       return NextResponse.json({ received: true });
+    }
+
+    if (!invoiceNumber) {
+      return NextResponse.json({ error: "Missing invoice number" }, { status: 400 });
     }
 
     // Get order from Supabase
     const { data: order, error } = await supabaseAdmin
       .from("orders")
       .select("*")
-      .eq("id", order_id)
+      .eq("id", invoiceNumber)
       .single();
 
     if (error || !order) {
-      console.error("Order not found:", order_id);
+      console.error("Order not found:", invoiceNumber);
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
     if (order.status === "paid") {
-      // Already processed
+      // Already processed — idempotent
       return NextResponse.json({ received: true });
     }
 
@@ -76,9 +66,9 @@ export async function POST(req: NextRequest) {
       .update({
         status: "paid",
         paid_at: new Date().toISOString(),
-        payment_type: payment_type || null,
+        payment_type: payload?.channel?.id || null,
       })
-      .eq("id", order_id);
+      .eq("id", invoiceNumber);
 
     // For product orders: generate download links
     if (order.type === "product") {
@@ -91,7 +81,7 @@ export async function POST(req: NextRequest) {
 
         await supabaseAdmin.from("download_links").insert({
           token: dlToken,
-          order_id: order_id,
+          order_id: invoiceNumber,
           product_title: item.title,
           product_id: item.id,
           expires_at: expiresAt.toISOString(),
@@ -111,13 +101,13 @@ export async function POST(req: NextRequest) {
         buyerName: order.buyer_name,
         items: order.items,
         downloadLinks,
-        orderId: order_id,
+        orderId: invoiceNumber,
       });
     }
 
     // For service orders: just log
     if (order.type === "service") {
-      console.log(`Service order paid: ${order_id} by ${order.buyer_name}`);
+      console.log(`Service order paid: ${invoiceNumber} by ${order.buyer_name}`);
     }
 
     return NextResponse.json({ received: true });
