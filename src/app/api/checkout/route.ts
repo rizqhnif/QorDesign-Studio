@@ -51,6 +51,9 @@ export async function POST(req: NextRequest) {
       payment: {
         payment_due_date: 60,
       },
+      additional_info: {
+        override_notification_url: `${baseUrl}/api/webhook/doku`,
+      },
       customer: {
         name: buyerName,
         email: buyerEmail,
