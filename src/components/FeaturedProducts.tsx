@@ -12,7 +12,7 @@ const products = [
     title: "Solitude in Bloom",
     category: "Illustration",
     price: 5000000,
-    priceMax: 10000000,
+    priceMax: 5350000,
     tag: "Popular",
     image: "/image/cewe-selfie.png",
     format: "PNG, PSD",
@@ -21,8 +21,8 @@ const products = [
     id: 2,
     title: "Golden Hour Memories",
     category: "Illustration",
-    price: 10000000,
-    priceMax: 20000000,
+    price: 5000000,
+    priceMax: 5350000,
     tag: "New",
     image: "/image/cewe-selfie-lagi.png",
     format: "PNG, PSD",
@@ -31,8 +31,8 @@ const products = [
     id: 3,
     title: "Nani Wartabone – Heritage Poster",
     category: "Graphic Design",
-    price: 7000000,
-    priceMax: 14000000,
+    price: 5000000,
+    priceMax: 5500000,
     tag: "New",
     image: "/image/nani-wartabone.png",
     format: "PNG, AI",
@@ -41,8 +41,8 @@ const products = [
     id: 4,
     title: "Hero of Time – Full Character Sheet",
     category: "Character Design",
-    price: 1000000,
-    priceMax: 2000000,
+    price: 5000000,
+    priceMax: 5250000,
     tag: "Hot",
     image: "/image/design-karakter-1.png",
     format: "PNG, PSD",
@@ -51,8 +51,8 @@ const products = [
     id: 5,
     title: "Ayah Laras – Character Sheet",
     category: "Character Design",
-    price: 1000000,
-    priceMax: 2000000,
+    price: 5000000,
+    priceMax: 5250000,
     tag: "New",
     image: "/image/design-karakter-2.png",
     format: "PNG, PSD",
@@ -61,8 +61,8 @@ const products = [
     id: 6,
     title: "Amel – Original Character Sheet",
     category: "Character Design",
-    price: 1000000,
-    priceMax: 2000000,
+    price: 5000000,
+    priceMax: 5200000,
     tag: "New",
     image: "/image/design-karakter-3.png",
     format: "PNG, PSD",
@@ -71,8 +71,8 @@ const products = [
     id: 7,
     title: "Laras – Character Concept",
     category: "Character Design",
-    price: 1000000,
-    priceMax: 2000000,
+    price: 5000000,
+    priceMax: 5200000,
     tag: "New",
     image: "/image/design-karakter-4.png",
     format: "PNG, PSD",
@@ -81,8 +81,8 @@ const products = [
     id: 8,
     title: "Riko Street Style – Character Turnaround",
     category: "Character Design",
-    price: 1000000,
-    priceMax: 2000000,
+    price: 5000000,
+    priceMax: 5200000,
     tag: "New",
     image: "/image/design-karakter-5.png",
     format: "PNG, PSD",
@@ -91,8 +91,8 @@ const products = [
     id: 9,
     title: "The Wanderer – Pose & Expression Pack",
     category: "Character Design",
-    price: 1000000,
-    priceMax: 2000000,
+    price: 5000000,
+    priceMax: 5200000,
     tag: "Popular",
     image: "/image/design-karakter-6.png",
     format: "PNG, PSD",
@@ -101,8 +101,8 @@ const products = [
     id: 10,
     title: "Urban Explorer – Character Sheet",
     category: "Character Design",
-    price: 1000000,
-    priceMax: 2000000,
+    price: 5000000,
+    priceMax: 5200000,
     tag: "New",
     image: "/image/design-karakter-7.jpg",
     format: "JPG, PSD",
@@ -111,8 +111,8 @@ const products = [
     id: 11,
     title: "Dusk Rider – Character Concept Art",
     category: "Character Design",
-    price: 1000000,
-    priceMax: 2000000,
+    price: 5000000,
+    priceMax: 5200000,
     tag: "New",
     image: "/image/design-karakter-8.png",
     format: "PNG, PSD",
@@ -121,8 +121,8 @@ const products = [
     id: 12,
     title: "Phantom Coat – Character Design",
     category: "Character Design",
-    price: 1000000,
-    priceMax: 2000000,
+    price: 5000000,
+    priceMax: 5200000,
     tag: "New",
     image: "/image/design-karakter-9.png",
     format: "PNG, PSD",
@@ -131,8 +131,8 @@ const products = [
     id: 13,
     title: "Quiet Afternoon – Pose Reference",
     category: "Illustration",
-    price: 10000000,
-    priceMax: 20000000,
+    price: 5000000,
+    priceMax: 5350000,
     tag: "New",
     image: "/image/orang-duduk.png",
     format: "PNG",
@@ -141,8 +141,8 @@ const products = [
     id: 14,
     title: "Plastik Mu Racun Ku – Campaign Poster",
     category: "Graphic Design",
-    price: 7000000,
-    priceMax: 14000000,
+    price: 5000000,
+    priceMax: 5500000,
     tag: "Hot",
     image: "/image/plastik-mu-racun-ku.png",
     format: "PNG, AI",
@@ -151,8 +151,8 @@ const products = [
     id: 15,
     title: "Iron Sentinel – Robot Concept Art",
     category: "Illustration",
-    price: 8000000,
-    priceMax: 16000000,
+    price: 5000000,
+    priceMax: 5350000,
     tag: "Popular",
     image: "/image/robot.png",
     format: "PNG, PSD",
@@ -161,8 +161,8 @@ const products = [
     id: 16,
     title: "Asta Showroom – Promotional Banner",
     category: "Graphic Design",
-    price: 1000000,
-    priceMax: 2000000,
+    price: 5000000,
+    priceMax: 5500000,
     tag: "New",
     image: "/image/banner.png",
     format: "PNG, AI",
@@ -171,11 +171,91 @@ const products = [
     id: 17,
     title: "QorDesign Studio – Brand Identity Pack",
     category: "Branding",
-    price: 2000000,
-    priceMax: 4000000,
+    price: 5000000,
+    priceMax: 5400000,
     tag: "Popular",
     image: "/image/logo.png",
     format: "PNG, SVG, AI",
+  },
+  {
+    id: 18,
+    title: "VGA RTX 3060 Ti 8GB MSI GAMING X TRIO GDDR6",
+    category: "VGA",
+    price: 3200000,
+    priceMax: 5000000,
+    tag: "Recommended",
+    image: "/image/rtx3060Ti.png",
+    format: "PNG, PSD",
+  },
+  {
+    id: 19,
+    title: "COLORFUL IGAME RTX 3060 ULTRA W OC 12GB GDDR6 NVIDIA VGA/RTX 3060",
+    category: "VGA",
+    price: 3200000,
+    priceMax: 5000000,
+    tag: "Recommended",
+    image: "/image/colorful.png",
+    format: "PNG, PSD",
+  },
+  {
+    id: 20,
+    title: "ZOTAC GAMING GEFORCE RTX 4060 Ti TWIN EDGE OC WHITE 8GB GDDR6 NVIDIA /4060Ti6",
+    category: "VGA",
+    price: 3200000,
+    priceMax: 5000000,
+    tag: "Recommended",
+    image: "/image/zotac.png",
+    format: "PNG, PSD",
+  },
+  {
+    id: 21,
+    title: "PSU VURRION ARC450 RGB FROST EDITION 80+ / POWER SUPLAY 450W",
+    category: "PSU",
+    price: 3200000,
+    priceMax: 5000000,
+    tag: "Recommended",
+    image: "/image/frostEdition.png",
+    format: "PNG, PSD",
+  },
+  {
+    id: 22,
+    title: "THERMALRIGHT KG-750 / KG 750 PSU POWER suplay 750W 80+ GOLD ATX 3.1 Fully Modular",
+    category: "PSU",
+    price: 3200000,
+    priceMax: 5000000,
+    tag: "Recommended",
+    image: "/image/psu.png",
+    format: "PNG, PSD",
+  },
+  {
+    id: 23,
+    title: "TEAM ELITE PLUS DDR4 16GB 2x8GB 3200 MHz RAM",
+    category: "RAM",
+    price: 3200000,
+    priceMax: 5000000,
+    tag: "Recommended",
+    image: "/image/ram.png",
+    format: "PNG, PSD",
+  },
+  {
+    id: 24,
+    title: "ADATA SPECTRIX D35D RGB DDR4 16GB 2x8GB 3200 MHz - Putih",
+    category: "RAM",
+    price: 3200000,
+    priceMax: 5000000,
+    tag: "Recommended",
+    image: "/image/adata.png",
+    format: "PNG, PSD",
+  },
+  {
+    id: 25,
+    title: "VGA RTX 3060 12GB ZOTAC TWIN EDGE OC GDDR6",
+    category: "VGA",
+    price: 3200000,
+    priceMax: 5000000,
+    tag: "Recommended",
+    image: "/image/zotacDua.png",
+    format: "PNG, PSD",
   },
 ];
 
@@ -183,14 +263,33 @@ const tagColors: Record<string, string> = {
   New: "bg-green-500/20 text-green-400 border-green-500/30",
   Popular: "bg-blue-500/20 text-blue-400 border-blue-500/30",
   Hot: "bg-orange-500/20 text-orange-400 border-orange-500/30",
+  Recommended: "bg-purple-500/20 text-purple-400 border-purple-500/30",
 };
 
-const categories = [
-  "All",
+const preferredCategoryOrder = [
   "Illustration",
   "Character Design",
   "Graphic Design",
   "Branding",
+];
+
+const categories = [
+  "All",
+  ...Array.from(new Set(products.map((product) => product.category))).sort(
+    (left, right) => {
+      const leftIndex = preferredCategoryOrder.indexOf(left);
+      const rightIndex = preferredCategoryOrder.indexOf(right);
+
+      if (leftIndex !== -1 || rightIndex !== -1) {
+        if (leftIndex === -1) return 1;
+        if (rightIndex === -1) return -1;
+
+        return leftIndex - rightIndex;
+      }
+
+      return left.localeCompare(right);
+    },
+  ),
 ];
 
 function formatPrice(price: number) {
@@ -208,16 +307,10 @@ function formatPriceRange(price: number, maxPrice?: number) {
 
 export default function FeaturedProducts() {
   const { addItem, items } = useCart();
-  const [added, setAdded] = useState<number[]>([]);
   const [activeCategory, setActiveCategory] = useState("All");
 
   const handleAdd = (product: (typeof products)[0]) => {
     addItem(product);
-    setAdded((prev) => [...prev, product.id]);
-    setTimeout(
-      () => setAdded((prev) => prev.filter((id) => id !== product.id)),
-      1500,
-    );
   };
 
   const filtered =
