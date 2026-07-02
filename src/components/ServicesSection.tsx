@@ -10,7 +10,7 @@ const services = [
   {
     title: "Custom Illustration",
     desc: "Ilustrasi digital custom sesuai kebutuhan — portrait, scene, fan art, atau konsep original.",
-    price: 15000000,
+    price: 5750000,
     features: [
       "Konsultasi konsep & brief",
       "2x revisi",
@@ -24,7 +24,7 @@ const services = [
   {
     title: "Character Design Package",
     desc: "Desain karakter lengkap dari konsep hingga final — cocok untuk game, animasi, webtoon, atau branding.",
-    price: 18000000,
+    price: 6000000,
     features: [
       "Character sheet lengkap (front, side, back)",
       "Expression & pose pack",
@@ -40,7 +40,7 @@ const services = [
   {
     title: "Brand Identity Design",
     desc: "Identitas visual lengkap untuk bisnis atau personal brand — logo, warna, tipografi, dan panduan penggunaan.",
-    price: 17500000,
+    price: 5250000,
     features: [
       "Logo design (3 konsep awal)",
       "Color palette & typography",
@@ -56,7 +56,7 @@ const services = [
   {
     title: "Motion Graphic / 2D Animation",
     desc: "Animasi 2D atau motion graphic untuk konten sosial media, presentasi, iklan, atau proyek kreatif.",
-    price: 20000000,
+    price: 6250000,
     features: [
       "Konsultasi storyboard",
       "Animasi durasi hingga 60 detik",
