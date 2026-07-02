@@ -6,7 +6,18 @@ import Image from "next/image";
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
 
-const products = [
+type Product = {
+  id: number;
+  title: string;
+  category: string;
+  price: number;
+  priceMax?: number;
+  tag: string;
+  image: string;
+  format: string;
+};
+
+const products: Product[] = [
   {
     id: 1,
     title: "Solitude in Bloom",
@@ -181,8 +192,7 @@ const products = [
     id: 18,
     title: "VGA RTX 3060 Ti 8GB MSI GAMING X TRIO GDDR6",
     category: "VGA",
-    price: 3200000,
-    priceMax: 5000000,
+    price: 3209000,
     tag: "Recommended",
     image: "/image/rtx3060Ti.png",
     format: "PNG, PSD",
@@ -191,8 +201,7 @@ const products = [
     id: 19,
     title: "COLORFUL IGAME RTX 3060 ULTRA W OC 12GB GDDR6 NVIDIA VGA/RTX 3060",
     category: "VGA",
-    price: 3200000,
-    priceMax: 5000000,
+    price: 4834550,
     tag: "Recommended",
     image: "/image/colorful.png",
     format: "PNG, PSD",
@@ -201,8 +210,7 @@ const products = [
     id: 20,
     title: "ZOTAC GAMING GEFORCE RTX 4060 Ti TWIN EDGE OC WHITE 8GB GDDR6 NVIDIA /4060Ti6",
     category: "VGA",
-    price: 3200000,
-    priceMax: 5000000,
+    price: 6839050,
     tag: "Recommended",
     image: "/image/zotac.png",
     format: "PNG, PSD",
@@ -211,8 +219,7 @@ const products = [
     id: 21,
     title: "PSU VURRION ARC450 RGB FROST EDITION 80+ / POWER SUPLAY 450W",
     category: "PSU",
-    price: 3200000,
-    priceMax: 5000000,
+    price: 350100,
     tag: "Recommended",
     image: "/image/frostEdition.png",
     format: "PNG, PSD",
@@ -221,8 +228,7 @@ const products = [
     id: 22,
     title: "THERMALRIGHT KG-750 / KG 750 PSU POWER suplay 750W 80+ GOLD ATX 3.1 Fully Modular",
     category: "PSU",
-    price: 3200000,
-    priceMax: 5000000,
+    price: 1037000,
     tag: "Recommended",
     image: "/image/psu.png",
     format: "PNG, PSD",
@@ -231,8 +237,7 @@ const products = [
     id: 23,
     title: "TEAM ELITE PLUS DDR4 16GB 2x8GB 3200 MHz RAM",
     category: "RAM",
-    price: 3200000,
-    priceMax: 5000000,
+    price: 2667080,
     tag: "Recommended",
     image: "/image/ram.png",
     format: "PNG, PSD",
@@ -241,8 +246,7 @@ const products = [
     id: 24,
     title: "ADATA SPECTRIX D35D RGB DDR4 16GB 2x8GB 3200 MHz - Putih",
     category: "RAM",
-    price: 3200000,
-    priceMax: 5000000,
+    price: 1350000,
     tag: "Recommended",
     image: "/image/adata.png",
     format: "PNG, PSD",
@@ -251,13 +255,23 @@ const products = [
     id: 25,
     title: "VGA RTX 3060 12GB ZOTAC TWIN EDGE OC GDDR6",
     category: "VGA",
-    price: 3200000,
-    priceMax: 5000000,
+    price: 3750000,
     tag: "Recommended",
     image: "/image/zotacDua.png",
     format: "PNG, PSD",
   },
+   {
+    id: 26,
+    title: "COOLER MASTER MWE GOLD 750 V2 - 750 80+ GOLD Fully Modulator - White",
+    category: "Cooler",
+    price: 1689120,
+    tag: "Recommended",
+    image: "/image/cooler.png",
+    format: "PNG, PSD",
+  },
 ];
+
+const fixedPriceCategories = new Set(["VGA", "PSU", "RAM", "Cooler"]);
 
 const tagColors: Record<string, string> = {
   New: "bg-green-500/20 text-green-400 border-green-500/30",
@@ -301,15 +315,19 @@ function formatPrice(price: number) {
   );
 }
 
-function formatPriceRange(price: number, maxPrice?: number) {
-  return `${formatPrice(price)} - ${formatPrice(maxPrice ?? price * 2)}`;
+function formatProductPrice(product: Product) {
+  if (fixedPriceCategories.has(product.category)) {
+    return formatPrice(product.price);
+  }
+
+  return `${formatPrice(product.price)} - ${formatPrice(product.priceMax ?? product.price * 2)}`;
 }
 
 export default function FeaturedProducts() {
   const { addItem, items } = useCart();
   const [activeCategory, setActiveCategory] = useState("All");
 
-  const handleAdd = (product: (typeof products)[0]) => {
+  const handleAdd = (product: Product) => {
     addItem(product);
   };
 
@@ -403,7 +421,7 @@ export default function FeaturedProducts() {
 
                 <div className="flex items-center justify-between">
                   <div className="text-yellow-400 font-bold text-sm">
-                    {formatPriceRange(product.price, product.priceMax)}
+                    {formatProductPrice(product)}
                   </div>
                   <button
                     onClick={() => handleAdd(product)}
